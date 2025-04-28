@@ -1,0 +1,25 @@
+#map {
+    height: 600px; width: 100%; 
+}
+
+.leaflet-control-attribution.leaflet-control{
+    display: none;
+}
+
+.filter-block{
+    width: fit-content; 
+    block-size: fit-content; 
+    border: 1px solid black; 
+    padding: 8px;
+    margin-bottom: 8px;
+}
+
+.filter-header{
+    text-align: center;
+    font-weight: bold;
+    margin: 4px;
+}
+
+form{
+    margin-bottom: 8px;
+}

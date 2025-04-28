@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transport Hack</title>
+  
+  <!-- Подключаем Leaflet CSS и JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <form id="filters-form">
+    <!-- Тип транспорта -->
+    <div class="filter-block">
+      <div class="filter-header">Тип транспорта</div>
+      <div>
+        <input type="checkbox">
+        <label>Автобус</label>
+        <div style="display: flex; margin-bottom: 8px">
+          <div>
+            <input type="checkbox">
+            <label>80</label>
+          </div>
+          <div>
+            <input type="checkbox">
+            <label>90</label>
+          </div>
+          <div>
+            <input type="checkbox">
+            <label>480</label>
+          </div>
+        </div>
+      </div>
+      <div>
+        <input type="checkbox">
+        <label>Трамвай</label>
+        <div style="display: flex">
+          <div>
+            <input type="checkbox">
+            <label>1</label>
+          </div>
+          <div>
+            <input type="checkbox">
+            <label>5</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Дни -->
+    <div class="filter-block">
+      <div class="filter-header">Дни</div>
+      <div>
+        <input type="checkbox">
+        <label>Декабрь</label>
+      </div>
+      <div>
+        <input type="checkbox">
+        <label>Март</label>
+      </div>
+    </div>
+
+    <!-- Время -->
+    <div class="filter-block">
+      <div class="filter-header">Время</div>
+      От: <input type="time" maxlength="8" size="8"> 
+      До: <input type="time" maxlength="8" size="8">
+    </div>
+
+    <!--Цвета-->
+    <div class="filter-block">
+      <div class="filter-header">Выделение цветом</div>
+      <div>
+        <input type="radio">
+        <label>Скорость</label>
+      </div>
+      <div>
+        <input type="radio">
+        <label>Маршрут</label>
+      </div>
+    </div>
+
+    <button id="route_id_button" type="submit">Получить</button>
+  </form>
+
+  <div id="map"></div>
+
+  <script src="script.js"/>
+</body>
+</html>
