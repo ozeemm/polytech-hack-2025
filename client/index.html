@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transport Hack</title>
+  
+  <!-- Подключаем Leaflet CSS и JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div>
+    <input type="text" id="route_id_input" placeholder="Номер маршрута" />
+    <button id="route_id_button">Получить маршрут</button>
+  </div>
+
+  <div id="map"></div>
+
+  <script src="script.js"/>
+</body>
+</html>
