@@ -30,6 +30,9 @@ export default function MapFilters({ onGetRoutesClick }) {
 
     const [isDataFetched, setIsDataFetched] = useState(false)
 
+    const [isOpen, setIsOpen] = useState(false)
+
+    // HTML
     function transportCheckbox(transport) {
         return (
             <div className="form-check" key={transport.key}>
@@ -45,7 +48,7 @@ export default function MapFilters({ onGetRoutesClick }) {
 
                 {/* Чекбоксы маршрутов */}
                 {checkedTransports.includes(transport.key) &&
-                    <div className='d-flex flex-column'>
+                    <div className='d-flex flex-column flex-md-row flex-wrap justify-content-around'>
                         {transport.routes.map(r => routeCheckbox(transport, r))}
                     </div>
                 }
@@ -71,6 +74,7 @@ export default function MapFilters({ onGetRoutesClick }) {
         )
     }
 
+    // Handlers
     function handleMonthChange(date){
         setCheckedMonths(prev => {
             if(prev.includes(date))
@@ -111,6 +115,7 @@ export default function MapFilters({ onGetRoutesClick }) {
         return `${monthNameCapitalized} ${period.year} г.`
     }
 
+    // Requests
     async function fetchData() {
         if(isDataFetched)
             return
@@ -123,6 +128,7 @@ export default function MapFilters({ onGetRoutesClick }) {
     async function fetchDates(){
         const response = await axios.get('http://127.0.0.1:5000/api/getDatesFilters')
         setMonthPeriods(response.data)
+        setCheckedMonths(monthPeriods.map(p => p.year + "-" + p.month))
         console.log("Got dates!")
     }
 
@@ -161,100 +167,111 @@ export default function MapFilters({ onGetRoutesClick }) {
     fetchData()
 
     return (
-        <div className='sidebar p-3'>
-            <form onSubmit={getFilteredGeoJson}>
-                {/* Чекбоксы для типов транспорта */}
-                <div className='card'>
-                    <div className="card-header text-center fw-bold bg-primary text-white">
-                        Выбор транспорта и маршрутов
-                    </div>
-                    <div className="card-body">
-                        <div id="transport-types-container" className="mb-3">
-                            <div className="d-flex flex-column gap-2" id="transport-checkboxes">
-                                {transports.map(transport => transportCheckbox(transport))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Месяцы */}
-                <div className="card mb-3">
-                    <div className="card-header text-center fw-bold bg-secondary text-white">
-                        Месяцы
-                    </div>
-                    <div className="card-body">
-                        {monthPeriods.map((period, index) =>
-                            <div className="form-check mb-2" key={index}>
-                                <input 
-                                    className="form-check-input" 
-                                    type="checkbox" 
-                                    id={index} 
-                                    checked={ checkedMonths.includes(`${period.year}-${period.month}`) }
-                                    onChange={(e) => handleMonthChange(`${period.year}-${period.month}`)}
-                                />
-                                <label className="form-check-label" htmlFor={index}>{monthPeriodTitle(period)}</label>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Время */}
-                <div className="card mb-3">
-                    <div className="card-header text-center fw-bold bg-secondary text-white">
-                        Время
-                    </div>
-                    <div className="card-body">
-                        <div className="mb-2">
-                            <label htmlFor="time-from" className="form-label">От:</label>
-                            <input
-                                type="time"
-                                className="form-control"
-                                id="time-from"
-                                value={timeFrom}
-                                onChange={(e) => setTimeFrom(e.target.value)}
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="time-to" className="form-label">До:</label>
-                            <input
-                                type="time"
-                                className="form-control"
-                                id="time-to"
-                                value={timeTo}
-                                onChange={(e) => setTimeTo(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Цвета */}
-                <div className="card mb-3">
-                    <div className="card-header text-center fw-bold bg-secondary text-white">
-                        Выделение цветом
-                    </div>
-                    <div className="card-body">
-                        {colorModes.map(mode =>
-                            <div className="form-check mb-2" key={mode.key}>
-                                <input
-                                    className="form-check-input"
-                                    type="radio"
-                                    name="color-mode"
-                                    id={"color-" + mode.key}
-                                    value={mode.key}
-                                    checked={colorMode == mode.key}
-                                    onChange={(e) => setColorMode(e.target.value)}
-                                />
-                                <label className="form-check-label" htmlFor={"color-" + mode.key}>{mode.title}</label>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Кнопка */}
-                <button id="route_id_button" type="submit" className="btn btn-success w-100 mt-3">
-                    Получить маршрут
+        <div>
+            <div>
+                <button 
+                    className={`openButton ${isOpen ? 'open' : ''}`}
+                    onClick={() => setIsOpen(!isOpen)}
+                >
+                    <i className={`bi bi-funnel-fill ${isOpen ? 'open' : ''}`}></i>
                 </button>
-            </form>
+            </div>
+
+            <div className={`sidebar p-3 ${isOpen ? 'open' : ''}`}>
+                <form onSubmit={getFilteredGeoJson}>
+                    {/* Чекбоксы для типов транспорта */}
+                    <div className='card'>
+                        <div className="card-header text-center fw-bold bg-primary text-white">
+                            Выбор транспорта и маршрутов
+                        </div>
+                        <div className="card-body">
+                            <div id="transport-types-container" className="mb-3">
+                                <div className="d-flex flex-column gap-2" id="transport-checkboxes">
+                                    {transports.map(transport => transportCheckbox(transport))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Месяцы */}
+                    <div className="card mb-3">
+                        <div className="card-header text-center fw-bold bg-secondary text-white">
+                            Месяцы
+                        </div>
+                        <div className="card-body">
+                            {monthPeriods.map((period, index) =>
+                                <div className="form-check mb-2" key={index}>
+                                    <input 
+                                        className="form-check-input" 
+                                        type="checkbox" 
+                                        id={index} 
+                                        checked={ checkedMonths.includes(`${period.year}-${period.month}`) }
+                                        onChange={(e) => handleMonthChange(`${period.year}-${period.month}`)}
+                                    />
+                                    <label className="form-check-label" htmlFor={index}>{monthPeriodTitle(period)}</label>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Время */}
+                    <div className="card mb-3">
+                        <div className="card-header text-center fw-bold bg-secondary text-white">
+                            Время
+                        </div>
+                        <div className="card-body">
+                            <div className="mb-2">
+                                <label htmlFor="time-from" className="form-label">От:</label>
+                                <input
+                                    type="time"
+                                    className="form-control"
+                                    id="time-from"
+                                    value={timeFrom}
+                                    onChange={(e) => setTimeFrom(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="time-to" className="form-label">До:</label>
+                                <input
+                                    type="time"
+                                    className="form-control"
+                                    id="time-to"
+                                    value={timeTo}
+                                    onChange={(e) => setTimeTo(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Цвета */}
+                    <div className="card mb-3">
+                        <div className="card-header text-center fw-bold bg-secondary text-white">
+                            Выделение цветом
+                        </div>
+                        <div className="card-body">
+                            {colorModes.map(mode =>
+                                <div className="form-check mb-2" key={mode.key}>
+                                    <input
+                                        className="form-check-input"
+                                        type="radio"
+                                        name="color-mode"
+                                        id={"color-" + mode.key}
+                                        value={mode.key}
+                                        checked={colorMode == mode.key}
+                                        onChange={(e) => setColorMode(e.target.value)}
+                                    />
+                                    <label className="form-check-label" htmlFor={"color-" + mode.key}>{mode.title}</label>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Кнопка */}
+                    <button id="route_id_button" type="submit" className="btn btn-success w-100 mt-3">
+                        Получить маршрут
+                    </button>
+                </form>
+            </div>
         </div>
     )
 }

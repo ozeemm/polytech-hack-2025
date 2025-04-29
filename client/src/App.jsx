@@ -12,7 +12,6 @@ export default function App() {
     const mapRef = useRef(null)
     const geoJsonLayerRef = useRef(null)
 
-    const [routeId, setRouteId] = useState('')
     const [geoJsonData, setGeoJsonData] = useState(null)
     const [hoveredFeature, setHoveredFeature] = useState(null)
     const [isLoading, setIsLoading] = useState(false)
@@ -68,14 +67,14 @@ export default function App() {
         
         const response = await axios.post("http://127.0.0.1:5000/api/Filter", requestBody);
         setGeoJsonData(response.data)
-        
+
         setIsLoading(false)
     }
 
     return (
         <div>
             <Loader isLoading={isLoading}/>
-
+                
             <MapFilters onGetRoutesClick={fetchRouteData}/>
 
             <MapContainer center={center} zoom={zoom} className='map' ref={mapRef}>
