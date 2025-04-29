@@ -4,8 +4,9 @@ import 'leaflet/dist/leaflet.css';
 import { useRef, useState } from 'react'
 import './App.css'
 import axios from 'axios'
-import './components/MapFilters'
-import MapFilters from './components/MapFilters';
+import './components/MapFilters/MapFilters'
+import MapFilters from './components/MapFilters/MapFilters';
+import Loader from './components/Loader/Loader';
 
 export default function App() {
     const mapRef = useRef(null)
@@ -38,12 +39,12 @@ export default function App() {
             layer.bindPopup(feature.properties.name)
 
         if(feature.properties){
-            // const tooltipText = Object.entries(feature.properties)
-            //                         .map(([key, value]) => `${key}: ${value}`)
-            //                         .join('<br>')
-            const tooltipText = `
-                color: ${feature.properties.color}<br>
-                speed: ${Math.floor(feature.properties.speed * 100) / 100}`
+            const tooltipText = Object.entries(feature.properties)
+                                    .map(([key, value]) => `${key}: ${value}`)
+                                    .join('<br>')
+            // const tooltipText = `
+            //     color: ${feature.properties.color}<br>
+            //     speed: ${Math.floor(feature.properties.speed * 100) / 100}`
 
             layer.bindTooltip(tooltipText, { sticky: true })
         }
@@ -81,13 +82,15 @@ export default function App() {
 
     return (
         <div>
+            <Loader isLoading={isLoading}/>
+
             <form onSubmit={handleSubmit}>
                 <input 
                     type="text" 
                     placeholder='Номер маршрута' 
                     onChange={(e) => setRouteId(e.target.value)}
                 />
-                <button type="submit" disabled={isLoading}>Показать</button>
+                <button type="submit">Показать</button>
             </form>
 
             <MapFilters />
