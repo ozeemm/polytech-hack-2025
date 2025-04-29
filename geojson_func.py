@@ -145,7 +145,7 @@ def generate_geojson(data, mode):
 
 
 
-def transfer_nearest_properties(geojson_lines):
+def transfer_nearest_properties(geojson_lines, settings):
     def to_multiline(geom):
         if geom.geom_type == 'LineString':
             return MultiLineString([geom])
@@ -208,6 +208,8 @@ def transfer_nearest_properties(geojson_lines):
     gdf_result = gdf_base.join(properties_df)
     gdf_result = gpd.GeoDataFrame(gdf_result, geometry='geometry')
 
+    if(not settings["showGraph"]):
+        gdf_result = gdf_result[gdf_result['color'].notna()]
     
     geojson = gdf_result.to_json()
 
@@ -229,10 +231,7 @@ def routes_near_each_point(data, radius_m = 50):
 
     data = pd.DataFrame(data)
 
-    geojson_data = {
-        "type": "FeatureCollection",
-        "features": []
-    }
+    geojson_data = []
 
     for i, row in data.iterrows():
         lat_i, lon_i = row['lat_av'], row['lon_av']
@@ -248,16 +247,11 @@ def routes_near_each_point(data, radius_m = 50):
                 nearby_routes.add((route_j, vtype_j))
 
         feature = {
-            "type": "Feature",
-            "properties": {
-                "routes_nearby": sorted(list(nearby_routes))  # список (маршрут, тип)
-            },
-            "geometry": {
-                "type": "Point",
+                "routes_nearby": sorted(list(nearby_routes)),  # список (маршрут, тип)
                 "coordinates": [lon_i, lat_i]  # Сначала lon, потом lat!
-            }
         }
-        geojson_data["features"].append(feature)
+
+        geojson_data.append(feature)
 
     return geojson_data
 

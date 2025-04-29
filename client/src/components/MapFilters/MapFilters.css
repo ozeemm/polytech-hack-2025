@@ -14,7 +14,8 @@
 }
 
 .sidebar.open{
-    right: 0
+    right: 0;
+    z-index: 2001;
 }
 
 .card {
@@ -87,7 +88,7 @@ select {
     font-size: 13px;
 }
 
-.openButton{
+.openButtonFilters{
     position: fixed;
     top: 15px;
     right: 15px;
@@ -100,14 +101,14 @@ select {
     height: 30px;
 }
 
-.openButton.open{
+.openButtonFilters.open{
     right: 315px;
 }
 
-.bi.bi-funnel-fill::before{
+.openButtonIcon{
     transition: transform 0.5s;
 }
 
-.bi.bi-funnel-fill.open::before{
+.openButtonIcon.open{
     transform: rotate(360deg);
 }

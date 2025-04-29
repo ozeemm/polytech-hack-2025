@@ -138,7 +138,7 @@ export default function MapFilters({ onGetRoutesClick }) {
         console.log("Got transports!")
     }
 
-    async function getFilteredGeoJson(e){
+    async function getFilters(e){
         e.preventDefault()
 
         const requestBody = {
@@ -170,15 +170,15 @@ export default function MapFilters({ onGetRoutesClick }) {
         <div>
             <div>
                 <button 
-                    className={`openButton ${isOpen ? 'open' : ''}`}
+                    className={`openButtonFilters ${isOpen ? 'open' : ''}`}
                     onClick={() => setIsOpen(!isOpen)}
                 >
-                    <i className={`bi bi-funnel-fill ${isOpen ? 'open' : ''}`}></i>
+                    <i className={`bi bi-funnel-fill openButtonIcon ${isOpen ? 'open' : ''}`}></i>
                 </button>
             </div>
 
             <div className={`sidebar p-3 ${isOpen ? 'open' : ''}`}>
-                <form onSubmit={getFilteredGeoJson}>
+                <form onSubmit={getFilters}>
                     {/* Чекбоксы для типов транспорта */}
                     <div className='card'>
                         <div className="card-header text-center fw-bold bg-primary text-white">

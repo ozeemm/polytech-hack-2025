@@ -96,7 +96,7 @@ def getDistDates():
 
 @app.route("/", methods=["POST"])
 def index1():
-    data = request.json
+    data = request.json['filter']
 
     with get_db_connection() as conn:
         cursor = conn.cursor()
@@ -109,7 +109,8 @@ def index1():
     
 @app.route("/api/Filter", methods=["POST"])
 def ReturnWithFilters():
-    data = request.json
+    data = request.json['filter']
+    settings = request.json['settings']
 
     st = data["timeStart"]
     et = data["timeEnd"]
@@ -164,11 +165,24 @@ def ReturnWithFilters():
 
         AllTransport = busResult + tramResult + trolResult + miniBusResult
 
+        if(settings["connectToGraph"]):
+            return transfer_nearest_properties(generate_geojson(AllTransport, data["colorMode"]), settings)
+        else:
+            return generate_geojson(AllTransport, data["colorMode"])
 
-        return  transfer_nearest_properties(generate_geojson(AllTransport, data["colorMode"]))
+@app.route("/api/Stations", methods=["GET"])
+def get_stations():
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("Select * FROM filtered_slow_points")
+        rows = cursor.fetchall()
+        result = [dict(row) for row in rows]
+
+        return routes_near_each_point(result)
 
 @app.route("/api/StationFilter", methods=["POST"])
 def ReturnPointsWithFilters():
+    # data = request.json['filter']
     data = request.json
 
     with get_db_connection() as conn:
@@ -203,9 +217,7 @@ def ReturnPointsWithFilters():
 
         AllTransport = busResult + tramResult + trolResult + miniBusResult
 
-
         return routes_near_each_point(AllTransport)
-
 
 if __name__ == "__main__":
     app.run(debug=True)
