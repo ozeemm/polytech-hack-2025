@@ -1,0 +1,102 @@
+.sidebar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 100vh;
+    overflow-y: auto;
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(0px);
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    z-index: 999;
+}
+
+.card {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+    transition: transform 0.2s;
+}
+
+.main-container {
+    display: flex;
+    height: 100vh;
+    position: relative;
+}
+
+.multiselect {
+    width: 100% !important;
+    text-align: left !important;
+}
+
+.multiselect .caret {
+    float: right;
+    margin-top: 6px;
+}
+
+.form-label {
+    margin-bottom: 0.4rem;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-block {
+    border: 1px solid #ccc;
+    padding: 12px;
+    margin-bottom: 16px;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+}
+
+.filter-header {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #333;
+}
+
+.checkbox-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+}
+
+select {
+    width: 100%;
+    padding: 6px;
+    margin-top: 4px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 13px;
+}
+
+.checkbox-group div {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+}
+
+button {
+    margin-top: 16px;
+    padding: 10px;
+    background-color: #3388ff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #2670da;
+}
+
+.leaflet-control-attribution.leaflet-control {
+    display: none;
+}

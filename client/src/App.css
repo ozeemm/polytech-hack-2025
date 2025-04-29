@@ -1,6 +1,6 @@
-.map{
-  height: 600px;
-  width: 100%;
+.map {
+  flex: 1;
+  height: 100vh;
 }
 
 .leaflet-control-attribution.leaflet-control{
