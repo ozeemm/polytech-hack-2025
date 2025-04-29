@@ -4,6 +4,8 @@ import 'leaflet/dist/leaflet.css';
 import { useRef, useState } from 'react'
 import './App.css'
 import axios from 'axios'
+import './components/MapFilters'
+import MapFilters from './components/MapFilters';
 
 export default function App() {
     const mapRef = useRef(null)
@@ -87,6 +89,8 @@ export default function App() {
                 />
                 <button type="submit" disabled={isLoading}>Показать</button>
             </form>
+
+            <MapFilters />
 
             <MapContainer center={center} zoom={zoom} className='map' ref={mapRef}>
                 <TileLayer
