@@ -67,7 +67,7 @@ def index():
         rows = cursor.fetchall()
         result = [dict(row) for row in rows]
 
-        names = {'bus': 'автобус', 'minibus':'маршрутка','tramway':'трамвай','trolleybus':'троллейбус'}
+        names = {'bus': 'Автобус', 'minibus': 'Маршрутка','tramway': 'Трамвай','trolleybus': 'Троллейбус'}
 
         res = dict() 
         for item in result:
@@ -78,9 +78,9 @@ def index():
                 res[item["vehicle_type"]]["routes"] = list()
             res[item["vehicle_type"]]["routes"].append(item["route"])
         
-        AllFilters = dict()
-
-        AllFilters["transport"] = res
+        AllFilters = list()
+        for key in res.keys():
+            AllFilters.append(res[key])
 
         return AllFilters
 
@@ -128,12 +128,12 @@ def ReturnWithFilters():
     with get_db_connection() as conn:
         cursor = conn.cursor()
         cursor.execute(f"""Select strftime('%m', signal_time) as month, 
-strftime('%Y', signal_time) as year, time(signal_time) as time, 
-uuid, lat, lon, vehicle_type, route, speed, direction 
-FROM DataWithClean
-WHERE time > ? AND time < ? 
-AND month IN ({monthes}) AND year IN ({years})          
-Order by uuid, time;""", (st, et,))
+                            strftime('%Y', signal_time) as year, time(signal_time) as time, 
+                            uuid, lat, lon, vehicle_type, route, speed, direction 
+                            FROM DataWithClean
+                            WHERE time > ? AND time < ? 
+                            AND month IN ({monthes}) AND year IN ({years})          
+                            ORDER BY uuid, signal_time;""", (st, et,))
         
         rows = cursor.fetchall()
 
@@ -166,10 +166,8 @@ Order by uuid, time;""", (st, et,))
         AllTransport = busResult + tramResult + trolResult + miniBusResult
 
 
-        return AllTransport
+        return get_speed_colored_route_geojson(AllTransport)
     
-
-
 
 if __name__ == "__main__":
     app.run(debug=True)

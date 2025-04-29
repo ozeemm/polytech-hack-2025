@@ -63,37 +63,20 @@ export default function App() {
         })
     }
 
-    // Отправака формы
-    async function handleSubmit(e){
-        e.preventDefault()
-
+    async function fetchRouteData(requestBody){
         setIsLoading(true)
-        await fetchRouteData()
-        setIsLoading(false)
-    }
-
-    async function fetchRouteData(){
-        const response = await axios.post("http://127.0.0.1:5000/", {
-            'RouteID': routeId
-        });
-
+        
+        const response = await axios.post("http://127.0.0.1:5000/api/Filter", requestBody);
         setGeoJsonData(response.data)
+        
+        setIsLoading(false)
     }
 
     return (
         <div>
             <Loader isLoading={isLoading}/>
 
-            <form onSubmit={handleSubmit}>
-                <input 
-                    type="text" 
-                    placeholder='Номер маршрута' 
-                    onChange={(e) => setRouteId(e.target.value)}
-                />
-                <button type="submit">Показать</button>
-            </form>
-
-            <MapFilters />
+            <MapFilters onGetRoutesClick={fetchRouteData}/>
 
             <MapContainer center={center} zoom={zoom} className='map' ref={mapRef}>
                 <TileLayer
