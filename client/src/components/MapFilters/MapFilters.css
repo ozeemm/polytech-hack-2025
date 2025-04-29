@@ -1,14 +1,20 @@
 .sidebar {
-    position: absolute;
+    /* position: absolute; */
+    position: fixed;
     top: 0;
-    right: 0;
+    right: -300px;
     width: 300px;
     height: 100vh;
     overflow-y: auto;
     background-color: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(0px);
     border-left: 1px solid rgba(0, 0, 0, 0.1);
-    z-index: 999;
+    z-index: 1001;
+    transition: right 0.25s ease-out;
+}
+
+.sidebar.open{
+    right: 0
 }
 
 .card {
@@ -81,22 +87,27 @@ select {
     font-size: 13px;
 }
 
-button {
-    margin-top: 16px;
-    padding: 10px;
-    background-color: #3388ff;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s;
+.openButton{
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    transition: right 0.25s ease-out;
+    z-index: 1001;
+
+    border-radius: 30%;
+    border-width: 2px;
+    width: 35px;
+    height: 30px;
 }
 
-button:hover {
-    background-color: #2670da;
+.openButton.open{
+    right: 315px;
 }
 
-.leaflet-control-attribution.leaflet-control {
-    display: none;
+.bi.bi-funnel-fill::before{
+    transition: transform 0.5s;
+}
+
+.bi.bi-funnel-fill.open::before{
+    transform: rotate(360deg);
 }
