@@ -58,17 +58,6 @@ def get_speed_colored_route_geojson(data):
 
     return geojson_data
 
-@app.route("/fix", methods=["GET"])
-def fix():
-    with get_db_connection() as conn:
-        cursor = conn.cursor()
-        bad_data = ["9\u0430", "36\u043a", "28\\u0440", "4\\u0441", "'4\\u0430'", "'10\\u043a'", "'7\\u043a'"]
-        cursor.execute("SELECT * FROM DataWithClean WHERE route = (?)", (bad_data[0],))
-        rows = cursor.fetchall()
-
-    result = [dict(row) for row in rows]
-
-    return result
 
 @app.route("/api/getTransportFilters", methods=["GET"])
 def index():
@@ -95,6 +84,15 @@ def index():
 
         return AllFilters
 
+@app.route("/api/getDatesFilters", methods=["GET"])
+def getDistDates():
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("Select Distinct strftime('%m', signal_time) as month, strftime('%Y', signal_time) as year FROM DataWithClean")
+        rows = cursor.fetchall()
+        result = [dict(row) for row in rows]
+
+        return result
 
 
 @app.route("/", methods=["POST"])

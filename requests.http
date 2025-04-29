@@ -1,13 +1,5 @@
 GET http://127.0.0.1:5000//api/getTransportFilters
 
-###
-POST http://127.0.0.1:5000/
-content-type: application/json
-
-{
-    "RouteID": "777"
- //   "Type": "bus"
-}
 
 ###
 POST http://127.0.0.1:5000/api/Filter
@@ -32,4 +24,4 @@ content-type: application/json
 
 ###
 
-GET http://127.0.0.1:5000/fix
+GET http://127.0.0.1:5000//api/getDatesFilters
