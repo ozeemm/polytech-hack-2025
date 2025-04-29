@@ -58,16 +58,43 @@ def get_speed_colored_route_geojson(data):
 
     return geojson_data
 
-@app.route("/", methods=["GET"])
+@app.route("/fix", methods=["GET"])
+def fix():
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        bad_data = ["9\u0430", "36\u043a", "28\\u0440", "4\\u0441", "'4\\u0430'", "'10\\u043a'", "'7\\u043a'"]
+        cursor.execute("SELECT * FROM DataWithClean WHERE route = (?)", (bad_data[0],))
+        rows = cursor.fetchall()
+
+    result = [dict(row) for row in rows]
+
+    return result
+
+@app.route("/api/getTransportFilters", methods=["GET"])
 def index():
     with get_db_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM DataWithClean WHERE uuid = 27648")
+        cursor.execute("SELECT DISTINCT vehicle_type, route FROM DataWithClean ORDER BY vehicle_type, route")
         rows = cursor.fetchall()
-
         result = [dict(row) for row in rows]
 
-        return jsonify(result)
+        names = {'bus': 'автобус', 'minibus':'маршрутка','tramway':'трамвай','trolleybus':'троллейбус'}
+
+        res = dict() 
+        for item in result:
+            if item["vehicle_type"] not in res:
+                res[item["vehicle_type"]] = dict()
+                res[item["vehicle_type"]]["key"] = item["vehicle_type"]
+                res[item["vehicle_type"]]["title"] = names[item["vehicle_type"]]
+                res[item["vehicle_type"]]["routes"] = list()
+            res[item["vehicle_type"]]["routes"].append(item["route"])
+        
+        AllFilters = dict()
+
+        AllFilters["transport"] = res
+
+        return AllFilters
+
 
 
 @app.route("/", methods=["POST"])
@@ -82,6 +109,69 @@ def index1():
         result = [dict(row) for row in rows]
 
         return get_speed_colored_route_geojson(result)
+    
+@app.route("/api/Filter", methods=["POST"])
+def ReturnWithFilters():
+    data = request.json
+
+    st = data["timeStart"]
+    et = data["timeEnd"]
+
+    monthes = ""
+    for date in data["dates"]:
+        monthes+="'" + date.split("-")[1] + "', "
+    monthes = monthes[:-2]
+    years = ""
+    for date in data["dates"]:
+        years+= "'" + date.split("-")[0] + "', "
+    years = years[:-2]
+
+
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(f"""Select strftime('%m', signal_time) as month, 
+strftime('%Y', signal_time) as year, time(signal_time) as time, 
+uuid, lat, lon, vehicle_type, route, speed, direction 
+FROM DataWithClean
+WHERE time > ? AND time < ? 
+AND month IN ({monthes}) AND year IN ({years})          
+Order by uuid, time;""", (st, et,))
+        
+        rows = cursor.fetchall()
+
+        result = [dict(row) for row in rows]
+
+        busResult = list()
+        for item in result:
+            if item["vehicle_type"] == "bus":
+                if item["route"] in data["routes"]["bus"]:
+                    busResult.append(item)
+        
+        tramResult = list()
+        for item in result:
+            if item["vehicle_type"] == "tramway":
+                if item["route"] in data["routes"]["tramway"]:
+                    tramResult.append(item)
+        
+        trolResult = list()
+        for item in result:
+            if item["vehicle_type"] == "trolleybus":
+                if item["route"] in data["routes"]["trolleybus"]:
+                    trolResult.append(item)
+
+        miniBusResult = list()
+        for item in result:
+            if item["vehicle_type"] == "minibus":
+                if item["route"] in data["routes"]["minibus"]:
+                    miniBusResult.append(item)
+
+        AllTransport = busResult + tramResult + trolResult + miniBusResult
+
+
+        return AllTransport
+    
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)

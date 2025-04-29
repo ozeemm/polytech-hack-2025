@@ -1,8 +1,35 @@
-GET http://127.0.0.1:5000/
+GET http://127.0.0.1:5000//api/getTransportFilters
+
 ###
 POST http://127.0.0.1:5000/
 content-type: application/json
 
 {
-    "RouteID": "10"
+    "RouteID": "777"
+ //   "Type": "bus"
 }
+
+###
+POST http://127.0.0.1:5000/api/Filter
+content-type: application/json
+
+
+{
+  "routes": {
+    "bus": ["10", "11", "13", "37"],
+    "tramway": ["1", "2"],
+    "trolleybus": [],
+    "minibus": []
+  },
+  
+  "dates": ["2024-12", "2025-03"],
+  
+  "timeStart": "",
+  "timeEnd": "",
+  
+  "colorMode": "speed"
+}
+
+###
+
+GET http://127.0.0.1:5000/fix
