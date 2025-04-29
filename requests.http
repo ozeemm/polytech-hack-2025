@@ -5,7 +5,6 @@ GET http://127.0.0.1:5000//api/getTransportFilters
 POST http://127.0.0.1:5000/api/Filter
 content-type: application/json
 
-
 {
   "routes": {
     "bus": ["10", "11", "13", "37"],
@@ -16,10 +15,23 @@ content-type: application/json
   
   "dates": ["2024-12", "2025-03"],
   
-  "timeStart": "",
-  "timeEnd": "",
+  "timeStart": "10:00:00",
+  "timeEnd": "10:01:00",
   
   "colorMode": "speed"
+}
+
+###
+POST http://127.0.0.1:5000/api/StationFilter
+content-type: application/json
+
+{
+  "routes": {
+    "bus": ["10", "11", "13", "37"],
+    "tramway": ["1", "2"],
+    "trolleybus": [],
+    "minibus": []
+  }
 }
 
 ###

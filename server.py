@@ -58,6 +58,50 @@ def get_speed_colored_route_geojson(data):
 
     return geojson_data
 
+def get_AV_speed_colored_route_geojson(data):
+    points = pd.DataFrame(data)
+
+    speed_min = points['speed_av'].min()
+    speed_max = points['speed_av'].max()
+    norm = mcolors.Normalize(vmin=speed_min, vmax=speed_max)
+    colormap = cm.RdYlGn
+    
+    geojson_data = {
+        "type": "FeatureCollection",
+        "speed_min": speed_min,
+        "speed_max": speed_max,
+        "features": []
+    }
+
+    # Для каждого отрезка (между точками) добавляем его в GeoJSON
+    for i in range(len(points) - 1):
+        point1 = points.iloc[i]
+        point2 = points.iloc[i + 1]
+
+        # Цвет по скорости
+        speed = point1['speed_av']  # Берем скорость из первой точки отрезка
+        rgba = colormap(norm(speed))  # Получаем RGBA цвет
+        hex_color = mcolors.to_hex(rgba)  # Преобразуем в HEX
+
+        # Создаём GeoJSON объект для отрезка
+        feature = {
+            "type": "Feature",
+            "properties": {
+                "speed": speed,
+                "color": hex_color
+            },
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [point1['lon_av'], point1['lat_av']],
+                    [point2['lon_av'], point2['lat_av']]
+                ]
+            }
+        }
+        geojson_data["features"].append(feature)
+
+    return geojson_data
+
 
 @app.route("/api/getTransportFilters", methods=["GET"])
 def index():
@@ -168,6 +212,46 @@ def ReturnWithFilters():
 
         return get_speed_colored_route_geojson(AllTransport)
     
+
+@app.route("/api/StationFilter", methods=["POST"])
+def ReturnPointsWithFilters():
+    data = request.json
+
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("Select * FROM filtered_slow_points")
+        rows = cursor.fetchall()
+        result = [dict(row) for row in rows]
+
+        busResult = list()
+        for item in result:
+            if item["vehicle_type"] == "bus":
+                if str(item["route"]) in data["routes"]["bus"]:
+                    busResult.append(item)
+        
+        tramResult = list()
+        for item in result:
+            if item["vehicle_type"] == "tramway":
+                if str(item["route"]) in data["routes"]["tramway"]:
+                    tramResult.append(item)
+        
+        trolResult = list()
+        for item in result:
+            if item["vehicle_type"] == "trolleybus":
+                if str(item["route"]) in data["routes"]["trolleybus"]:
+                    trolResult.append(item)
+
+        miniBusResult = list()
+        for item in result:
+            if item["vehicle_type"] == "minibus":
+                if str(item["route"]) in data["routes"]["minibus"]:
+                    miniBusResult.append(item)
+
+        AllTransport = busResult + tramResult + trolResult + miniBusResult
+
+
+        return get_AV_speed_colored_route_geojson(AllTransport)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
