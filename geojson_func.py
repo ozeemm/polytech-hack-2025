@@ -208,9 +208,63 @@ def transfer_nearest_properties(geojson_lines):
     gdf_result = gdf_base.join(properties_df)
     gdf_result = gpd.GeoDataFrame(gdf_result, geometry='geometry')
 
-    # Удаляем строки, где 'color' или другие важные свойства отсутствуют (незакрашенные линии)
-    gdf_result = gdf_result[gdf_result['color'].notna()]
-
+    
     geojson = gdf_result.to_json()
+
+    return geojson
+
+
+def routes_near_each_point(data, radius_m = 50):
+    """
+    Для каждой координаты (lat_av, lon_av) возвращает список маршрутов с типом транспорта,
+    проходящих в радиусе radius_m (в метрах), включая свой маршрут.
+    
+    Параметры:
+    - data: DataFrame с колонками ['lat_av', 'lon_av', 'route', 'vehicle_type']
+    - radius_m: радиус в метрах для поиска маршрутов поблизости
+    
+    Возвращает:
+    - Список словарей с полями lat, lon, routes_nearby (список (route, vehicle_type))
+    """
+
+    data = pd.DataFrame(data)
+
+    geojson_data = {
+        "type": "FeatureCollection",
+        "features": []
+    }
+
+    for i, row in data.iterrows():
+        lat_i, lon_i = row['lat_av'], row['lon_av']
+        nearby_routes = set()
+
+        for j, other in data.iterrows():
+            lat_j, lon_j = other['lat_av'], other['lon_av']
+            route_j = str(other['route'])
+            vtype_j = str(other['vehicle_type'])
+
+            dist = geodesic((lat_i, lon_i), (lat_j, lon_j)).meters
+            if dist <= radius_m:
+                nearby_routes.add((route_j, vtype_j))
+
+        feature = {
+            "type": "Feature",
+            "properties": {
+                "routes_nearby": sorted(list(nearby_routes))  # список (маршрут, тип)
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [lon_i, lat_i]  # Сначала lon, потом lat!
+            }
+        }
+        geojson_data["features"].append(feature)
+
+    return geojson_data
+
+def get_graph():
+    # Загрузка GeoJSON
+    gdf_base = gpd.read_file('Граф Иркутск_link_geojson.geojson')     # Граф УДС
+    gdf_base = gdf_base.to_crs(epsg=4326) 
+    geojson = gdf_base.to_json()
 
     return geojson

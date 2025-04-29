@@ -27,8 +27,8 @@ content-type: application/json
 
 {
   "routes": {
-    "bus": ["10", "11", "13", "37"],
-    "tramway": ["1", "2"],
+    "bus": [],
+    "tramway": ["1","2","3","4"],
     "trolleybus": [],
     "minibus": []
   }

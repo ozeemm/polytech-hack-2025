@@ -204,7 +204,7 @@ def ReturnPointsWithFilters():
         AllTransport = busResult + tramResult + trolResult + miniBusResult
 
 
-        return get_AV_speed_colored_route_geojson(AllTransport)
+        return routes_near_each_point(AllTransport)
 
 
 if __name__ == "__main__":
