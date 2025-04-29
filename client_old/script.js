@@ -133,3 +133,28 @@ document.getElementById("route_id_button").addEventListener("click", async (e) =
     alert("Не удалось получить данные маршрута.");
   }
 });
+//тут выделение начало
+const drawnItems = new L.FeatureGroup();
+map.addLayer(drawnItems);
+
+const drawControl = new L.Control.Draw({
+  draw: {
+    polygon: true,
+    rectangle: true,
+    circle: false,
+    polyline: false,
+    marker: false,
+    circlemarker: false
+  },
+  edit: {
+    featureGroup: drawnItems
+  }
+});
+map.addControl(drawControl);
+
+map.on(L.Draw.Event.CREATED, function (e) {
+  const layer = e.layer;
+  drawnItems.addLayer(layer);
+
+  console.log('Геометрия:', JSON.stringify(layer.toGeoJSON()));
+}); //<- тут выделение конец
