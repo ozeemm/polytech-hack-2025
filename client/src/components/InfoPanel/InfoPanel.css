@@ -1,0 +1,11 @@
+.infoPanel{
+    position: fixed;
+    margin-bottom: auto;
+    left: 20px;
+    bottom: 175px;
+
+    width: 350px;
+    height: 150px;
+
+    z-index: 1000;
+}

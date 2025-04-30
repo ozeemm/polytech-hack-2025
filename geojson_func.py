@@ -29,8 +29,6 @@ def generate_geojson(data, mode):
     
     data = pd.DataFrame(data)
 
-    print(data.columns)
-
     data['signal_time'] = pd.to_datetime(data['signal_time'])
 
     geojson_data = {
@@ -72,9 +70,9 @@ def generate_geojson(data, mode):
                         "color": color,
                         "signal_time_from": p1['signal_time'].isoformat(),
                         "signal_time_to": p2['signal_time'].isoformat(),
-                        "uuid_from": int(p1['uuid']),
-                        "uuid_to": int(p2['uuid']),
-                        "route": str(p1['route'])
+                        "uuid": int(p1['uuid']),
+                        "route": str(p1['route']),
+                        "vehicle_type": str(p1['vehicle_type'])
                     },
                     "geometry": {
                         "type": "LineString",
@@ -102,9 +100,9 @@ def generate_geojson(data, mode):
                                 "color": color,
                                 "signal_time_from": p1['signal_time'].isoformat(),
                                 "signal_time_to": p2['signal_time'].isoformat(),
-                                "uuid_from": int(p1["uuid"]),
-                                "uuid_to": int(p2["uuid"]),
-                                "route": str(p1['route'])
+                                "uuid": int(p1["uuid"]),
+                                "route": str(p1['route']),
+                                "vehicle_type": str(p1['vehicle_type'])
                             },
                             "geometry": {
                                 "type": "LineString",
@@ -116,7 +114,7 @@ def generate_geojson(data, mode):
         for uuid in data['uuid'].unique():
             points = data[data['uuid'] == uuid].sort_values('signal_time')
             color = mcolors.to_hex(colormap(random.random()))
-        
+
             for i in range(len(points) - 1):
                 p1, p2 = points.iloc[i], points.iloc[i + 1]
                 delta = p2['signal_time'] - p1['signal_time']
@@ -130,9 +128,9 @@ def generate_geojson(data, mode):
                             "color": color,
                             "signal_time_from": p1['signal_time'].isoformat(),
                             "signal_time_to": p2['signal_time'].isoformat(),
-                            "uuid_to": int(p1["uuid"]),
-                            "uuid_from": int(p2["uuid"]),
-                            "route": str(p1['route'])
+                            "uuid": int(p1["uuid"]),
+                            "route": str(p1['route']),
+                            "vehicle_type": str(p1['vehicle_type'])
                         },
                         "geometry": {
                             "type": "LineString",
@@ -196,8 +194,7 @@ def transfer_nearest_properties(geojson_lines, settings):
                 "color": nearest_geom['color'],
                 "signal_time_from": nearest_geom['signal_time_from'],
                 "signal_time_to": nearest_geom['signal_time_to'],
-                "uuid_from": int(nearest_geom['uuid_from']),
-                "uuid_to": int(nearest_geom['uuid_to'])
+                "uuid": int(nearest_geom['uuid']),
             }
         return {}
 

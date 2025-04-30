@@ -92,20 +92,6 @@ def getDistDates():
         result = [dict(row) for row in rows]
 
         return result
-
-
-@app.route("/", methods=["POST"])
-def index1():
-    data = request.json['filter']
-
-    with get_db_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute(f"SELECT * FROM DataWithClean WHERE route = ? ORDER BY uuid, signal_time", (data["RouteID"],))
-        rows = cursor.fetchall()
-
-        result = [dict(row) for row in rows]
-
-        return get_speed_colored_route_geojson(result)
     
 @app.route("/api/Filter", methods=["POST"])
 def ReturnWithFilters():

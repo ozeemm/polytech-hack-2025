@@ -9,6 +9,7 @@ import './components/MapFilters/MapFilters'
 import MapFilters from './components/MapFilters/MapFilters';
 import Loader from './components/Loader/Loader';
 import SettingsPanel from './components/SettingsPanel/SettingsPanel';
+import InfoPanel from './components/InfoPanel/InfoPanel';
 
 export default function App() {
     const mapRef = useRef(null)
@@ -18,6 +19,7 @@ export default function App() {
     const [geoJsonData, setGeoJsonData] = useState(null)
     const [stationsData, setStationsData] = useState(null)
     const [hoveredFeature, setHoveredFeature] = useState(null)
+    const [hoveredData, setHoveredData] = useState(null)
 
     const [isLoading, setIsLoading] = useState(false)
     let settings = {}
@@ -43,44 +45,20 @@ export default function App() {
         if (feature.properties && feature.properties.name)
             layer.bindPopup(feature.properties.name)
 
-        if (feature.properties) {
-            const tooltipText = Object.entries(feature.properties)
-                .map(([key, value]) => `${key}: ${value}`)
-                .join('<br>')
-            // const tooltipText = `
-            //     color: ${feature.properties.color}<br>
-            //     speed: ${Math.floor(feature.properties.speed * 100) / 100}`
-
-            layer.bindTooltip(tooltipText, { sticky: true })
-        }
-
         layer.on({
             mouseover: () => {
                 setHoveredFeature(feature)
                 layer.bringToFront()
-                layer.openTooltip()
+                
+                if(feature.properties.color)
+                    setHoveredData({ type: 'route', data: feature })
             },
 
             mouseout: () => {
                 setHoveredFeature(null)
-                layer.closeTooltip()
+                setHoveredData(null)
             }
         })
-    }
-
-    function routesNearbyToHTML(routes_nearby){
-        const translations = {
-            "tramway": "Трамвай",
-            "bus": "Автобус",
-            "minibus": "Маршрутка",
-            "trolleybus": "Троллейбус",  
-        }
-
-        const html = routes_nearby.map(r => 
-            `${translations[r[1]]}: ${r[0]}`
-        ).join(';')
-
-        return html
     }
 
     async function fetchRouteData(filterParams) {
@@ -116,6 +94,7 @@ export default function App() {
 
             <MapFilters onGetRoutesClick={fetchRouteData} />
             <SettingsPanel onSettingsChanged={handleSettingsChanged} />
+            <InfoPanel data={hoveredData}/>
 
             <MapContainer center={center} zoom={zoom} className='map' ref={mapRef}>
                 <TileLayer
@@ -139,8 +118,8 @@ export default function App() {
                             position={[station.coordinates[1], station.coordinates[0]]}
                             ref={markerRef}
                             eventHandlers={{
-                                mouseover: () => console.log(`Entered ${routesNearbyToHTML(station.routes_nearby)}`),
-                                mouseout: () => console.log(`Out ${routesNearbyToHTML(station.routes_nearby)}`)
+                                mouseover: () => setHoveredData({ type: 'station', data: station.routes_nearby }),
+                                mouseout: () => setHoveredData(null)
                             }}
                         />
                     )
