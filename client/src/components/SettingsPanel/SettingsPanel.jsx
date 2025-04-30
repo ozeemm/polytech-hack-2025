@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import axios from 'axios'
 import './SettingsPanel.css'
 
 export default function SettingsPanel({ onSettingsChanged }) {
@@ -17,6 +18,23 @@ export default function SettingsPanel({ onSettingsChanged }) {
 
         onSettingsChanged(settings)
     }, [connectToGraph, showGraph, showStations, onSettingsChanged])
+
+    async function onExportClick(){
+        const response = await axios.get("http://127.0.0.1:5000/api/gtfs_download", {
+            responseType: 'blob'
+        })
+
+        const blob = new Blob([response.data], { type: response.headers['content-type'] })
+        const url = window.URL.createObjectURL(blob)
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'GTFS.zip'; // задай имя файла
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+    }
 
     return (
         <div>
@@ -70,6 +88,10 @@ export default function SettingsPanel({ onSettingsChanged }) {
                                 onChange={(e) => setShowStations(!showStations)} />
                             <label className='form-check-label' htmlFor='show-stations-checkbox'>Показывать остановки</label>
                         </div>
+
+                        <button className="btn btn-success w-100 mt-3" onClick={onExportClick}>
+                            Экспорт в GTFS
+                        </button>
                     </div>
                 </div>
             </div>

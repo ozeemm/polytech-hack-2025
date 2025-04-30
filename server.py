@@ -1,6 +1,7 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
 import sqlite3
+import os
 
 from geojson_func import *
 
@@ -204,6 +205,13 @@ def ReturnPointsWithFilters():
         AllTransport = busResult + tramResult + trolResult + miniBusResult
 
         return routes_near_each_point(AllTransport)
+
+@app.route("/api/gtfs_download", methods=["GET"])
+def GetArchive():
+    current_script_path = __file__
+    directory_path = os.path.dirname(os.path.abspath(current_script_path))
+    file_path = directory_path +'/GTFS/export.zip'
+    return send_file(file_path, as_attachment=True)
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,0 +1,3 @@
+route_id,agency_id,route_short_name,route_long_name,route_type,Headway,Сapacity
+1,0,7,Седьмой (начальная АЗС конечная ГСК),1,0,
+2,0,702,Краснокаменск (ост. Магазин Новинка) - Приаргунск (площадь),1,0,
